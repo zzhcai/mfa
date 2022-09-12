@@ -187,3 +187,12 @@ The subject staff take academic misconduct very seriously. In this subject in th
 ### Originality Multiplier
 
 For work that we find is similar to another submission or information found online, an originality multiplier will be applied to the work.  For example, if 20% of the assessment is deemed to have been taken from another source, the final mark will be multiplied by 0.8.
+
+
+# Marks
+
+- 17.5/20 (87.5%)
+
+- Some minor issues for equivalence partitioning though: 1) with authentication types such as None, single double etc; 2) OTHER is not feasible because None will cover the invalid type. Good work for boundary-value analysis but missing some off and on points are wrong such as len(data)=1,2 etc. Clear demonstration of an understanding of control-flow testing and criteria. Justification is complete and straightforward to see. Very good discussion; demonstrates a very good understanding of the main concepts in the subject.
+
+  \- Najam Nazar
