@@ -1,0 +1,87 @@
+<project name="Project" default="default">
+
+    <target name="check_prog">
+        <fail message="Please provide a program to test with -Dprogam=''. The arguments can be 
+one of {original, mutant-1, mutant-2, mutant-3, mutant-4, mutant-5}">
+            <condition>
+                <or>
+                    <not><isset property="program"/></not>
+                    <not><contains 
+string="original,mutant-1,mutant-2,mutant-3,mutant-4,mutant-5" substring="${program}"/></not>
+                </or>
+            </condition>
+        </fail>
+    </target>
+
+    <target name="check_test">
+        <fail message="Please provide a test with -Dtest=''. The arguments can be one of 
+{BoundaryTests, PartitioningTests}">
+            <condition>
+                <or>
+                    <not><isset property="test"/></not>
+                    <not><contains string="BoundaryTests,PartitioningTests,MFATests" substring="${test}"/></not>
+                </or>
+            </condition>
+        </fail>
+    </target>
+
+    <target name="compile_prog" depends="check_prog">
+        <mkdir dir="classes/programs/${program}" />
+        <depend srcdir="programs/${program}" destdir="classes/programs/${program}" 
+cache=".depcache/programs/${program}" closure="yes"/>
+        <javac srcdir="programs/${program}" destdir="classes/programs/${program}"  debug="true" 
+classpath="lib/junit-4.11.jar;lib/hamcrest-core-1.3.jar" includeantruntime="false"/>
+    </target>
+
+    <target name="compile_orig">
+        <mkdir dir="classes/programs/original" />
+        <depend srcdir="tests" destdir="classes/programs/original" 
+cache=".depcache/programs/original" closure="yes"/>
+        <javac srcdir="programs/original" destdir="classes/programs/original" 
+classpath="lib/junit-4.11.jar;lib/hamcrest-core-1.3.jar" includeantruntime="false"/>
+    </target>
+
+    <target name="compile_test" depends="compile_orig, check_test">
+        <mkdir dir="classes/tests" />
+        <depend srcdir="tests/" destdir="classes/tests/" 
+cache=".depcache/tests/" closure="yes"/>
+        <javac srcdir="tests/" destdir="classes/tests/" 
+classpath="lib/junit-4.11.jar;lib/hamcrest-core-1.3.jar;classes/programs/original" 
+includeantruntime="false"/>
+    </target>
+
+
+    <target name="test" depends="compile_prog, compile_test">
+        <mkdir dir="results"/>
+        <parallel threadCount="1" timeout="5000">
+            <sequential>
+                <junit printsummary="yes" fork="yes" haltonfailure="yes">
+                    <classpath>
+                        <pathelement path="classes/programs/${program}"/>
+                        <pathelement path="classes/tests/"/>
+                        <pathelement path="lib/junit-4.11.jar"/>
+                        <pathelement path="lib/hamcrest-core-1.3.jar"/>
+                    </classpath>
+                    <formatter type="plain"/>
+                    <test name="swen90006.mfa.${test}" todir="results" 
+outfile="${test}_results.${program}"/>
+                </junit>
+            </sequential>
+        </parallel>
+    </target>
+
+    <target name="default">
+        <antcall target="test">
+           <param name="program" value="original"/>
+           <param name="test" value="MFATests"/>
+        </antcall>
+    </target>
+
+    <target name="clean">
+        <delete dir="classes"/>
+        <delete dir=".depcache"/>
+        <delete><fileset dir="results" includes="**/*"/></delete>
+    </target>
+
+</project>
+
